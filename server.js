@@ -2,6 +2,7 @@ const http = require('http');
 const { v4: uuidv4 } = require('uuid');
 
 const config = require('./config');
+const errorHandle = require('./lib/errorHandle');
 
 const API_ENV = config.API_ENV;
 const headers = config.headers;
@@ -42,14 +43,7 @@ const requestListener = (req, res) => {
         }));
         res.end();
       } catch (e) {
-        const errorMsg = e.message || 'parse error.';
-
-        res.writeHead(400, headers);
-        res.write(JSON.stringify({
-          'status': 'false',
-          'message': errorMsg
-        }));
-        res.end();
+        errorHandle(res, e);
       }
     });
   } else if(req.url === API_ENV && req.method === 'DELETE') {
@@ -77,14 +71,7 @@ const requestListener = (req, res) => {
       }));
       res.end();
     } catch (e) {
-      const errorMsg = e.message || 'parse error.';
-
-      res.writeHead(400, headers);
-      res.write(JSON.stringify({
-        'status': 'false',
-        'message': errorMsg
-      }));
-      res.end();
+      errorHandle(res, e);
     }
   } else if(req.url.startsWith('/todos/') && req.method === 'PATCH') {
     req.on('end', () => {
@@ -108,14 +95,7 @@ const requestListener = (req, res) => {
         }));
         res.end();
       } catch (e) {
-        const errorMsg = e.message || 'parse error.';
-  
-        res.writeHead(400, headers);
-        res.write(JSON.stringify({
-          'status': 'false',
-          'message': errorMsg
-        }));
-        res.end();
+        errorHandle(res, e);
       }
     });
   } else if(req.method === 'OPTIONS') {
