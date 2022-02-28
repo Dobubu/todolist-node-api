@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Dobubu/todolist-node-api-/issues"
   },
-  "homepage": "https://github.com/Dobubu/todolist-node-api-#readme"
+  "homepage": "https://github.com/Dobubu/todolist-node-api-#readme",
+  "dependencies": {
+    "uuid": "^8.3.2"
+  }
 }
