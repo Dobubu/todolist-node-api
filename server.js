@@ -8,11 +8,20 @@ const headers = config.headers;
 const requestListener = (req, res) => {
   if(req.url === API_ENV && req.method === 'GET') {
     res.writeHead(200, headers);
-    res.write('index');
+    res.write(JSON.stringify({
+      'status': 'success',
+      'data': []
+    }));
+    res.end();
+  } else if(req.method === 'OPTIONS') {
+    res.writeHead(200, headers);
     res.end();
   } else {
     res.writeHead(404, headers);
-    res.write('page not found!');
+    res.write(JSON.stringify({
+      'status': 'false',
+      'message': 'page not found!'
+    }));
     res.end();
   };
 };
