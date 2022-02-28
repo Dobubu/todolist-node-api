@@ -6,12 +6,15 @@ const config = require('./config');
 const API_ENV = config.API_ENV;
 const headers = config.headers;
 
-const todos = [{ 
-  id: uuidv4(),
-  title: 'eat'
-}];
+let todos = [];
 
 const requestListener = (req, res) => {
+  let body = '';
+  
+  req.on('data', chunk => {
+    body += chunk;
+  });
+
   if(req.url === API_ENV && req.method === 'GET') {
     res.writeHead(200, headers);
     res.write(JSON.stringify({
@@ -20,12 +23,21 @@ const requestListener = (req, res) => {
     }));
     res.end();
   } else if(req.url === API_ENV && req.method === 'POST') {
-    res.writeHead(200, headers);
-    res.write(JSON.stringify({
-      'status': 'success',
-      'data': todos
-    }))
-    res.end();
+    req.on('end', () => {
+      const data = JSON.parse(body);
+      const payload = {
+        ...data,
+        id: uuidv4()
+      };
+      todos = [...todos, payload];
+
+      res.writeHead(200, headers);
+      res.write(JSON.stringify({
+        'status': 'success',
+        'data': todos
+      }))
+      res.end();
+    });
   } else if(req.method === 'OPTIONS') {
     res.writeHead(200, headers);
     res.end();
