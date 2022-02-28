@@ -52,6 +52,15 @@ const requestListener = (req, res) => {
         res.end();
       }
     });
+  } else if(req.url === API_ENV && req.method === 'DELETE') {
+    todos = [];
+
+    res.writeHead(200, headers);
+    res.write(JSON.stringify({
+      'status': 'success',
+      'data': todos
+    }));
+    res.end();
   } else if(req.method === 'OPTIONS') {
     res.writeHead(200, headers);
     res.end();
