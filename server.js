@@ -86,6 +86,38 @@ const requestListener = (req, res) => {
       }));
       res.end();
     }
+  } else if(req.url.startsWith('/todos/') && req.method === 'PATCH') {
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const title = data.title;
+        if(!title) throw new Error('title field is require.');
+
+        const id = req.url.split('/').pop();
+        const isExist = todos.find(o => o.id === id);
+  
+        if(!isExist) throw new Error('todo not exist.');
+  
+        const i = todos.findIndex(o => o.id === id);
+        todos[i].title = title;
+  
+        res.writeHead(200, headers);
+        res.write(JSON.stringify({
+          'status': 'success',
+          'data': todos
+        }));
+        res.end();
+      } catch (e) {
+        const errorMsg = e.message || 'parse error.';
+  
+        res.writeHead(400, headers);
+        res.write(JSON.stringify({
+          'status': 'false',
+          'message': errorMsg
+        }));
+        res.end();
+      }
+    });
   } else if(req.method === 'OPTIONS') {
     res.writeHead(200, headers);
     res.end();
