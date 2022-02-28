@@ -24,19 +24,33 @@ const requestListener = (req, res) => {
     res.end();
   } else if(req.url === API_ENV && req.method === 'POST') {
     req.on('end', () => {
-      const data = JSON.parse(body);
-      const payload = {
-        ...data,
-        id: uuidv4()
-      };
-      todos = [...todos, payload];
+      try {
+        const data = JSON.parse(body);
+        
+        if(!data.title) throw new Error('title field is require.');
 
-      res.writeHead(200, headers);
-      res.write(JSON.stringify({
-        'status': 'success',
-        'data': todos
-      }))
-      res.end();
+        const payload = {
+          ...data,
+          id: uuidv4()
+        };
+        todos = [...todos, payload];
+  
+        res.writeHead(200, headers);
+        res.write(JSON.stringify({
+          'status': 'success',
+          'data': todos
+        }));
+        res.end();
+      } catch (e) {
+        const errorMsg = e.message || 'parse error.';
+
+        res.writeHead(400, headers);
+        res.write(JSON.stringify({
+          'status': 'false',
+          'message': errorMsg
+        }));
+        res.end();
+      }
     });
   } else if(req.method === 'OPTIONS') {
     res.writeHead(200, headers);
