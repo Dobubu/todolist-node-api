@@ -61,6 +61,31 @@ const requestListener = (req, res) => {
       'data': todos
     }));
     res.end();
+  } else if(req.url.startsWith('/todos/') && req.method === 'DELETE') {
+    try {
+      const id = req.url.split('/').pop();
+      const isExist = todos.find(o => o.id === id);
+
+      if(!isExist) throw new Error('todo not exist.');
+
+      todos = todos.filter(o => o.id !== id);
+
+      res.writeHead(200, headers);
+      res.write(JSON.stringify({
+        'status': 'success',
+        'data': todos
+      }));
+      res.end();
+    } catch (e) {
+      const errorMsg = e.message || 'parse error.';
+
+      res.writeHead(400, headers);
+      res.write(JSON.stringify({
+        'status': 'false',
+        'message': errorMsg
+      }));
+      res.end();
+    }
   } else if(req.method === 'OPTIONS') {
     res.writeHead(200, headers);
     res.end();
